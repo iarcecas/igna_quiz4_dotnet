@@ -1,0 +1,49 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pool:
+  name: 'COMP367_Windows'
+
+variables:
+  buildConfiguration: 'Release'
+  projectPath: '**/*.csproj'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
+  inputs:
+    command: 'restore'
+    projects: $(projectPath) 
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build project'
+  inputs:
+    command: 'build'
+    projects: $(projectPath) 
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run tests'
+  inputs:
+    command: 'test'
+    projects: $(projectPath) 
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish project'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true 
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    ArtifactName: 'drop' 
+    publishLocation: 'Container'
