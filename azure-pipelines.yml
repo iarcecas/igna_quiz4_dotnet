@@ -6,7 +6,7 @@ trigger:
 - main
 
 pool:
-  name: 'COMP367_Windows'
+  name: 'COMP367-Windows'
 
 variables:
   buildConfiguration: 'Release'
